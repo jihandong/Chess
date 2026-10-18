@@ -1,0 +1,107 @@
+% 编译：latexmk -xelatex template.tex
+% 复制本文件写新笔记；优先改标题、摘要、FEN 和走子。
+% 本模板用 ctexart 处理中文；acmart 的投稿元数据与版权区对私人笔记过重，
+% 因而保留它的双栏信息密度，而不引入投稿专用结构。
+\documentclass[UTF8,a4paper,10pt]{ctexart}
+
+% geometry：页边距。数字越小，每栏可用面积越大。
+\usepackage[margin=14mm,top=13mm,bottom=15mm]{geometry}
+% 双栏在正文开始后由 \twocolumn 开启；这里设置两栏间的空隙。
+\setlength{\columnsep}{5mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\linespread{0.96}
+\ctexset{
+  section={format=\raggedright\bfseries\normalsize,beforeskip=7pt,afterskip=3pt},
+  subsection={format=\raggedright\bfseries\normalsize,beforeskip=5pt,afterskip=2pt}
+}
+\usepackage{microtype} % 微调窄栏字距。
+\usepackage{enumitem}  % 压缩列表间距。
+\setlist{nosep,leftmargin=*,topsep=2pt}
+\usepackage{xcolor} % 颜色与混色语法，如 noteRed!35。
+\definecolor{noteBlue}{HTML}{27648A}
+\definecolor{noteRed}{HTML}{B5433E}
+\definecolor{noteGreen}{HTML}{3B7553}
+\definecolor{noteGold}{HTML}{A57824}
+\definecolor{boardLight}{HTML}{F2EEE5}
+\definecolor{boardDark}{HTML}{B5C7C2}
+\usepackage[colorlinks=true,linkcolor=noteBlue,urlcolor=noteBlue]{hyperref}
+
+% xskak：解析代数记谱；chessboard：从 FEN 或当前走子绘制棋盘。
+% chessboard 同时提供格子着色、圈选、箭头，内部调用 chessfss 与 PGF。
+\usepackage{xskak}
+\usepackage{chessboard}
+% LSBC3 允许给 skaknew 棋盘/棋子分层着色；只为下方样式示例加载。
+\makeatletter\input{lsbc3enc.def}\makeatother
+\setchessboard{boardfontsize=17pt,showmover=false}
+
+% \ChessPosition[选项]{FEN}：直接展示给定局面。
+% #1 原样传给 chessboard；back... 画在棋子下，mark... 画在棋子上。
+\newcommand{\ChessPosition}[2][]{%
+  \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par%
+}
+% \ChessCurrent[选项]：展示 \mainline 记录后的局面。
+\newcommand{\ChessCurrent}[1][]{%
+  \par\noindent\makebox[\columnwidth][c]{\chessboard[#1]}\par%
+}
+
+\begin{document}
+% 跨两栏的紧凑标题；复制模板时改标题、作者和摘要。
+\twocolumn[{%
+  \begin{center}
+    {\Large\bfseries 国际象棋笔记：主题名称\par}
+    \vspace{2pt}
+    {\small 作者 \quad\textbar\quad \today\par}
+    \vspace{3pt}
+    {\small\textbf{摘要：}用一句话写本篇的关键结论。\par}
+  \end{center}
+  \vspace{-8pt}
+}]
+
+\section{核心结论}
+
+用两三句话写下本篇想记住的判断，再用局面说明。
+
+\subsection{FEN 局面与标记}
+
+% 红色背景：受关注的格子；蓝色箭头：候选着法。
+% 先指定 backstyle=color，再调用 backfields；前景箭头用 markstyle。
+\ChessPosition[
+  backstyle=color,color=noteRed!35,backfields={e5,f7},
+  markstyle=straightmove,color=noteBlue,markmove=f3-e5
+]{r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3}
+
+\subsection{按走子记录}
+
+% xskak 把走子推进到当前局面；\ChessCurrent 不需要 FEN。
+\newchessgame
+\mainline{1. e4 e5 2. Nf3 Nc6 3. Bc4}
+\ChessCurrent
+
+\section{棋盘样式速览}
+
+% skaknew 与 skak 两种字体随 chessfss/skak 提供。
+\noindent\textbf{默认字体：skaknew}
+\ChessPosition[boardfontfamily=skaknew,boardfontsize=15pt]{r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3}
+
+\noindent\textbf{经典字体：skak}
+\ChessPosition[boardfontfamily=skak,boardfontsize=15pt]{r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3}
+
+% LSBC3 的字形层可分别着色；需要导言区的 lsbc3enc.def。
+\noindent\textbf{柔和棋盘：彩色字形层}
+\ChessPosition[
+  boardfontfamily=skaknew,boardfontsize=15pt,boardfontencoding=LSBC3,
+  whitefieldmaskcolor=boardLight,blackfieldmaskcolor=boardDark,
+  whitepiececolor=noteBlue,blackpiececolor=black,setfontcolors
+]{r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3}
+
+% inverse 翻转视角；border/circle/cross 是常用前景标记。
+\noindent\textbf{翻转视角与战术标记}
+\ChessPosition[
+  boardfontsize=15pt,inverse,
+  backstyle=border,color=noteGold,backfield=e5,
+  markstyle=knightmove,color=noteBlue,markmove=f3-e5,
+  markstyle=cross,color=noteRed,markfield=f7
+]{r1bqkbnr/pppp1ppp/2n5/4p3/2B1P3/5N2/PPPP1PPP/RNBQK2R w KQkq - 2 3}
+
+\end{document}
