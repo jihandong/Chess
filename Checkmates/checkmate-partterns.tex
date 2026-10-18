@@ -1,0 +1,224 @@
+% !LW recipe = latexmk (xelatex)
+\documentclass[UTF8,a4paper,10pt]{ctexart}
+\usepackage[margin=14mm,top=13mm,bottom=15mm]{geometry}
+\setlength{\columnsep}{5mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\linespread{0.96}
+\ctexset{
+  section={format=\raggedright\bfseries\large,beforeskip=7pt,afterskip=3pt},
+  subsection={format=\raggedright\bfseries\normalsize,beforeskip=5pt,afterskip=2pt}
+}
+\usepackage{microtype}
+\usepackage{enumitem}
+\setlist[itemize]{nosep}
+\usepackage{xcolor}
+\definecolor{attackRed}{HTML}{C03736}
+\definecolor{threatYellow}{HTML}{E5B536}
+\definecolor{moveBlue}{HTML}{245E91}
+\definecolor{movePurple}{HTML}{7A4397}
+\usepackage{chessboard}
+\usepackage{twemojis}
+\usepackage{newunicodechar}
+\setchessboard{boardfontsize=17pt,showmover=true,moverstyle=square}
+
+\newfontfamily\arrowlabelfont{Latin Modern Sans}
+\newcommand{\ArrowLabel}[3]{%
+  \begingroup\setlength{\fboxsep}{0.5pt}%
+  \colorbox{#1}{\textcolor{#2}{{\arrowlabelfont\fontsize{6}{6}\selectfont #3}}}%
+  \endgroup}
+% Black moves: yellow arrow and label; White moves: blue arrow and label.
+\newcommand{\BoardMoveArrow}[5]{%
+  \pgfsetstrokecolor{#2}%
+  \pgfsetlinewidth{1.1pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}%
+  \pgftext[at=\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}]{%
+    \ArrowLabel{#3}{#4}{#5}}}
+\cbDefinePgfMoveStyle{plyone}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{1}}
+\cbDefinePgfMoveStyle{plytwo}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}}
+\cbDefinePgfMoveStyle{plythree}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{2}}
+\cbDefinePgfMoveStyle{plyfour}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
+\cbDefinePgfMoveStyle{whiteplyone}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}}
+\newcommand{\BoardInverseMoveArrow}[7]{%
+  \pgfsetstrokecolor{#2}%
+  \pgfsetlinewidth{1.1pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}%
+  \pgftext[rotate=180,at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#6}{#7}}]{%
+    \ArrowLabel{#3}{#4}{#5}}}
+\cbDefinePgfMoveStyle{backrankqueen}{\BoardInverseMoveArrow{#1}{threatYellow}{threatYellow}{black}{1}{10pt}{0pt}}
+\cbDefinePgfMoveStyle{backrankwhiterook}{\BoardInverseMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}{0pt}{-4pt}}
+\cbDefinePgfMoveStyle{backrankblackrook}{\BoardInverseMoveArrow{#1}{threatYellow}{threatYellow}{black}{2}{-8pt}{0pt}}
+% Shift the two rook rays to opposite sides of the f-file so both remain visible.
+\newcommand{\StackedRookArrow}[2]{%
+  \pgfsetstrokecolor{attackRed}%
+  \pgfsetlinewidth{1.2pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointadd{\pgfpointorigin}{\pgfpoint{#2}{0pt}}}%
+  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{#2}{0pt}}}%
+  \pgfusepath{stroke}}
+\cbDefinePgfMoveStyle{rookrayleft}{\StackedRookArrow{#1}{-2pt}}
+\cbDefinePgfMoveStyle{rookrayright}{\StackedRookArrow{#1}{2pt}}
+\cbDefinePgfMoveStyle{queenroute}{%
+  \pgfsetstrokecolor{moveBlue}%
+  \pgfsetlinewidth{1.1pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}}
+\cbDefinePgfRegionStyle{dashedredbox}{%
+  \pgfsetstrokecolor{attackRed}%
+  \pgfsetlinewidth{1pt}%
+  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
+  \pgfpathrectanglecorners{\pgfpointxy{-0.44}{0.44}}%
+    {\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpointxy{0.44}{-0.44}}}%
+  \pgfusepath{stroke}}
+% An unnumbered dashed arrow shows an attack opened by a move.
+\cbDefinePgfMoveStyle{attackray}{%
+  \pgfsetstrokecolor{attackRed}%
+  \pgfsetlinewidth{1pt}%
+  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}}
+\newcommand{\Position}[3][]{%
+  \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
+  \noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesubsection\quad #3}}\par%
+}
+
+\begin{document}
+\pagestyle{plain}
+\twocolumn[{%
+  \begin{center}
+    {\Large\bfseries Checkmate Patterns\par}
+    \vspace{2pt}
+    {\small Tactical Motifs \quad\textbar\quad \the\year/\the\month/\the\day\par}
+  \end{center}
+  \vspace{-7pt}
+}]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fool's Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 愚人杀法的核心：f 兵缺失，后和象借王翼斜线攻击；弃后引开并消除 h 兵。
+\section[Fool's Mate]{\texttwemoji{clown face} Fool's Mate}
+\subsection{Queen Sacrifice on g6}
+
+With the f7-pawn gone, the h5--e8 diagonal reaches the black king.
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={g6,f7,e8},
+  markstyle=circle,color=movePurple,markfields={h7},
+  markstyle=attackray,markmove=h5-e8,
+  markstyle=plyone,markmove=g7-g6,
+  markstyle=plytwo,markmove=h5-g6,
+  markstyle=plythree,markmove=h7-g6,
+  markstyle=plyfour,markmove=d3-g6
+]{rnbqkb1r/ppppp1pp/8/3n3Q/8/3B4/PPP2PPP/R1B1K1NR b - - 0 1}{1...g6 2.Qxg6+ hxg6 3.Bxg6\#}
+
+%如果出了后兵却仍然挡着后（罕见情况），也可以逼出f兵。
+\subsection{Knight Sacrifice on e6}
+
+If the queen's pawn has advanced but the queen is still blocked (a rare case), the f-pawn can also be drawn out.
+
+Earlier, the knight was on g5. Against:
+\begin{itemize}
+  \item ...f6: Ne6 can get the trapped queen!
+  \item ...h6: on above case.
+\end{itemize}
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={d8,f8},
+  markstyle=circle,color=movePurple,markfields={h6},
+  markstyle=attackray,markmove=h5-e8,
+  markstyle=plyone,markmove=f7-e6,
+  markstyle=plytwo,markmove=d1-h5,
+  markstyle=plythree,markmove=g7-g6,
+  markstyle=plyfour,markmove=h5-g6
+]{r1bqkbnr/pppnppp1/4N2p/8/4p3/2N5/PPPP1PPP/R1BQKB1R b - - 0 1}{1...fxe6 2.Qh5+ g6 3.Qxg6\#}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Back Rank Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The key is to seize the back rank. The amount of force depends on how many pieces are stacked and connected; however many there are, they are useless if scattered.
+% Do not let the opponent's rook and queen stack up; if they do, the back rank cannot be defended.
+% The stacking here is unusual: starting from the attack point on the back rank, stack the rook and queen along a file, and the queen along a diagonal. So it is not really "stacking"; the core is concentrating firepower.
+  % This algorithm is complicated; the opponent's force must also be calculated for each square.
+  % Calculate it this way: for each back-rank square, add +1/-1 for occupation and attack. Finding or creating a square with a score greater than 0 means mate is possible.
+% Do not let the opponent's rook and queen reach the king's side; the king can block them.
+\section{Back-Rank Mate}
+
+
+% 关键点是集中火力到格子，以及引离保护底线的车后。
+The key is to \textcolor{red}{concentrate firepower} and \textcolor{red}{draw away the rook and queen protecting the back rank}.
+
+\subsection{Bobby Fisher's Game}
+
+Qf2 not only has a chance to draw away the f1 rook, but also blocks the opponent's attack on f7.
+
+\begin{figure}[t]
+\Position[
+  inverse=true,
+  backstyle=color,color=attackRed!42,backfields={f7,e1},
+  markstyle=attackray,markmove=f2-e1,
+  markstyle=backrankqueen,markmove=d4-f2,
+  markstyle=backrankwhiterook,markmove=f1-g1,
+  markstyle=backrankblackrook,markmove=e8-e1
+]{4rbk1/3Q1ppp/3p4/3P4/3q4/B7/P5PP/5R1K b - - 0 1}{1...Qf2 2.Rg1 Re1}
+\end{figure}
+
+\subsection{Overload Defender Rook}
+
+f8 rook would suffer from tripple pressure now.
+
+\begin{figure}[t]
+\Position[
+  markstyle=rookrayleft,markmove=f7-f8,
+  markstyle=rookrayright,markmove=f1-f8,
+  markstyle=attackray,markmove=e7-e8,
+  markstyle=attackray,markmove=e7-f8,
+  markstyle=whiteplyone,markmove=c7-e7
+]{4rrk1/2Q2Rpp/2p5/p7/3q4/8/2P3PP/5R1K w - - 0 1}{1. Qe7}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Kiss of Death TODO
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Damiano's Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{\texttwemoji{alembic} Damiano's Mate}
+
+% 这个模式很简单，关键在于g6兵对h7后的支持，以及f8挡住王的去路（一般是易位后的车）。
+% 为了达成这个局面，我们往往需要创造h开放线，并常伴随着h车弃子来给后开路。
+This pattern is quite straightforward; the key lies in the support provided by the g6 pawn to the h7 square, combined with the f8 square being blocked (typically by a rook from castling).
+
+To reach this position, one usually needs to open h-file, which frequently involves sacrificing h-file rook, to clear a path for the queen.
+
+\begin{figure}[t]
+\noindent\makebox[\columnwidth][c]{\chessboard[
+  setfen={3r1rk1/1p3pp1/1qp3P1/2nnp3/p7/3B1P2/PPP3P1/1K1QR2R w - - 0 1},
+  showmover=false,
+  markstyle=queenroute,markmove=d1-h1,
+  markstyle=queenroute,markmove=h1-h7,
+  markstyle=attackray,markmove=h7-g8,
+  markstyle=attackray,markmove=h7-h8,
+]}\par
+\noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesection}}\par
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Opera Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\end{document}

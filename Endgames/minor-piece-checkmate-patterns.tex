@@ -1,0 +1,114 @@
+% !LW recipe = latexmk (xelatex)
+% 双栏终局笔记。LaTeX Workshop 使用上面的 XeLaTeX 配方。
+\documentclass[UTF8,a4paper,10pt]{ctexart}
+\usepackage[margin=14mm,top=13mm,bottom=15mm]{geometry}
+\setlength{\columnsep}{5mm}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\linespread{0.96}
+\ctexset{
+  section={format=\raggedright\bfseries\normalsize,beforeskip=7pt,afterskip=3pt},
+  subsection={format=\raggedright\bfseries\normalsize,beforeskip=5pt,afterskip=2pt}
+}
+\usepackage{microtype}
+\usepackage{xcolor}
+\definecolor{attackRed}{HTML}{C03736}
+\definecolor{threatYellow}{HTML}{E5B536}
+\definecolor{survivalGreen}{HTML}{54A66A}
+\definecolor{moveBlue}{HTML}{245E91}
+\usepackage{chessboard}
+\setchessboard{boardfontsize=17pt,showmover=false}
+
+% chessboard 的标记继承棋子字体；箭头数字必须显式切换到正文字体。
+\newfontfamily\arrowlabelfont{Latin Modern Sans}
+% 数字大小改 \fontsize 的第一个值；白底/蓝底大小改 \fboxsep。
+\newcommand{\ArrowLabel}[3]{%
+  \begingroup\setlength{\fboxsep}{0.5pt}%
+  \colorbox{#1}{\textcolor{#2}{{\arrowlabelfont\fontsize{6}{6}\selectfont #3}}}%
+  \endgroup}
+\cbDefinePgfMoveStyle{stepone}{%
+  \pgfsetstrokecolor{moveBlue}%
+  \pgfsetlinewidth{1.1pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}%
+  \pgftext[at=\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}]{%
+    \ArrowLabel{moveBlue}{white}{1}}}
+\cbDefinePgfMoveStyle{steptwo}{%
+  \pgfsetstrokecolor{moveBlue}%
+  \pgfsetlinewidth{1.1pt}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpointorigin}%
+  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
+  \pgfusepath{stroke}%
+  \pgftext[at=\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}]{%
+    \ArrowLabel{moveBlue}{white}{2}}}
+% #2 is the FEN; #3 is the move sequence printed under the board.
+\newcommand{\Position}[3][]{%
+  \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
+  \noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries #3}}\par%
+}
+
+\begin{document}
+\twocolumn[{%
+  \begin{center}
+    % 少子杀王定式
+    {\Large\bfseries Minor-Piece Checkmate Patterns\par}
+    \vspace{2pt}
+    % 双象与马象
+    {\small Two Bishops and Bishop and Knight \quad\textbar\quad
+      \the\year/\the\month/\the\day\par}
+  \end{center}
+  \vspace{-7pt}
+}]
+
+% 双象杀王
+\section{BB: Two Bishops}
+
+% 逼近：王跟进，双象封线
+\subsection{Approach: King Opposition \& Bishop Block}
+
+% 对王时，以象插入双王之间，迫使黑王退向底线；然后继续对王。
+When the kings are in opposition, place a bishop between them to force the black king toward the back rank; then regain the opposition.
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={d6,e6,f6},
+  color=threatYellow!55,backfields={c8,d7,f7,g8},
+  color=survivalGreen!55,backfields={d8,e8,f8},
+  markstyle=stepone,markmove=d5-e6
+]{8/4k3/8/3BK3/5B2/8/8/8 w - - 0 1}{1.Be6}
+
+% 常见情况：黑王g8
+\subsection{Common Case: Black King on g8}
+
+% 黑格象可在 a3--f8--h6 斜线上的任一安全位置，双象先后踩住g8和h8。图中 \textbf{1.Be6+ Kh8 2.Bf6\#}。
+The dark-squared bishop may occupy any safe square along the a3--f8--h6 diagonal. The two bishops successively cover g8 and h8.
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={f7,g7,h7},
+  color=attackRed!55,backfields={f8},
+  color=survivalGreen!55,backfields={h8},
+  markstyle=border,color=threatYellow,markfields={f7,g7,g8,h8},
+  markstyle=stepone,markmove=d7-e6,
+  markstyle=steptwo,markmove=e7-f6
+]{6k1/3BB3/6K1/8/8/8/8/8 w - - 0 1}{1.Be6+ Kh8 2.Bf6\#}
+
+% 罕见情况：黑王h8
+\subsection{Rare Case: Black King on h8}
+% 黑格象只能在 h6（理论上可以在f8，但实战应该走不出来），双象先后踩住h8和g8。图中\textbf{1.Bg7+ Kg8 2.Be6\#}。
+\textcolor{attackRed}{The dark-squared bishop can only be on h6} (theoretically also f8, though that position should not arise in practice). The two bishops successively cover h8 and g8.
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={f7,g7,h7},
+  color=attackRed!55,backfields={f8},
+  color=survivalGreen!55,backfields={g8},
+  markstyle=border,color=threatYellow,markfields={f7,g8,h8},
+  markstyle=stepone,markmove=h6-g7,
+  markstyle=steptwo,markmove=d7-e6
+]{7k/3B4/6KB/8/8/8/8/8 w - - 0 1}{1.Bg7+ Kg8 2.Be6\#}
+
+% 马象杀王
+\section{Checkmating with Bishop and Knight}
+
+\end{document}
