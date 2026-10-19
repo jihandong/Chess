@@ -377,9 +377,6 @@ Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barr
 
 Much similar with Opera Mating, which is also discovered by Morphy. It feels like dula-weapon, longswoard + shortsword.
 
-BTW, since g7 is proctected, there is a discover check trick to remove every thing on 7th line, when f8 is blocked by opponent piece, and g6 blocked by own piece.
-
-
 \GoalBoard[
   markstyle=operathreat,markmove=f6-h8,
   markstyle=operathreat,markmove=g5-g8,
@@ -403,5 +400,61 @@ Morphy Mate often happes in the corner, occupying f6 to remove g pawn for rook i
 % Boden Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\Needspace{160pt}
+\section{\texttwemoji{crossed swords} Boden's Mate}
+
+Bishop pair cross mate, similar to Morphy Mate, this time we have the same dual swords at hands.
+
+% Minimal a6/f4 mating net: the black knight and rook block d7 and d8.
+\GoalBoard[
+  showmover=true,
+  markstyle=operathreat,markmove=a6-c8,
+  markstyle=operathreat,markmove=f4-b8
+]{2kr4/3n4/B7/8/5B2/8/8/6K1 b - - 0 1}{a4-f8}
+
+\subsection{Double Check and Queen Sacrifice}
+
+We ofen need to remove \underline{b or g pawn to} make path for 2nd bishop, this involving sacrifice.
+
+\Position[
+  markstyle=attackray,markmove=f4-b8,
+  markstyle=attackray,markmove=a6-c8,
+  markstyle=whiteplyone,markmove=e5-d7,
+  markstyle=plyone,markmove=b8-c8,
+  markstyle=plytwo,markmove=b2-b7,
+  markstyle=plythree,markmove=c8-b7,
+  markstyle=plyfour,markmove=e2-a6
+]{rk1r3q/pp2bp2/2p1p1p1/3nN2p/5B2/7P/1Q2BPP1/R5K1 w - - 0 1}{1.Nd7+ Kc8 2.Qxb7+ Kxb7 3.Ba6\#}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Epaulette Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Needspace{150pt}
+\section{\texttwemoji{fleur-de-lis} Epaulette Mate}
+
+Be aware the Epaulette can only be rook or pawns (seems almost impossible in practice), Knights would fight back, bishops and queen would block the threat.
+
+\noindent\begin{minipage}[t]{0.48\columnwidth}
+  \centering\vspace{0pt}
+  \chessboard[
+    setfen={3rkr2/8/4Q3/8/8/8/8/K7 b - - 0 1},
+    printarea={c6-g8},boardfontsize=16pt,showmover=true,
+    markstyle=operathreat,markmove=e6-e8,
+    markstyle=operathreat,markmove=e6-d7,
+    markstyle=operathreat,markmove=e6-f7
+  ]\par
+  {\footnotesize\bfseries Queen}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\columnwidth}
+  \centering\vspace{0pt}
+  \chessboard[
+    setfen={3rkr2/2R5/4R3/8/8/8/8/K7 b - - 0 1},
+    printarea={c6-g8},boardfontsize=16pt,showmover=true,
+    markstyle=operathreat,markmove=e6-e8,
+    markstyle=operathreat,markmove=c7-f7
+  ]\par
+  {\footnotesize\bfseries Two rooks}
+\end{minipage}\par
 
 \end{document}
