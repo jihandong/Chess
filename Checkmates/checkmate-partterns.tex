@@ -158,7 +158,7 @@
 \newcommand{\GoalBoard}[3][]{%
   \Needspace{90pt}%
   \par\vspace{-5pt}\noindent\makebox[\columnwidth][c]{\chessboard[
-    setfen={#2},printarea={#3},boardfontsize=20pt,showmover=false,#1]}\par\nobreak
+    setfen={#2},printarea={#3},boardfontsize=18pt,showmover=false,#1]}\par\nobreak
   \vspace{-1pt}\noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesection}}\par\vspace{-2pt}%
 }
 
@@ -270,7 +270,7 @@ f8 rook would suffer from tripple pressure now.
 
 % 这个模式很简单，关键在于g6兵对h7后的支持，以及f8挡住王的去路（一般是易位后的车）。
 % 为了达成这个局面，我们往往需要创造h开放线，并常伴随着h车弃子来给后开路。
-This pattern is quite straightforward; the key lies in the support provided by the g6 pawn to the h7 square, combined with the f8 square being blocked (typically by a rook from castling).
+This pattern is quite straightforward; the key lies in the support provided by the \underline{g6 pawn} to the \underline{h7 queen}, combined with the f8 square being blocked (typically by a rook from castling).
 
 To reach this position, one usually needs to open h-file, which frequently involves sacrificing h-file rook, to clear a path for the queen.
 
@@ -300,6 +300,7 @@ To reach this position, one usually needs to open h-file, which frequently invol
 \Needspace{100pt}
 \section{\texttwemoji{performing arts} Opera Mate}
 
+This pattern sometime arises in the corner(see d-file as a-file or h-file), when gh pawns are gone.
 
 \GoalBoard[
   markstyle=operathreat,markmove=d8-e8,
@@ -337,5 +338,70 @@ The queen sacrifice draws the black king onto the d-file. The bishop then moves 
   markstyle=queenroute,markmove=d2-d7,
   markstyle=kingroute,markmove=e8-f8
 ]{r1b1k2r/1p2bppp/p1n2q2/8/8/5B2/PPPQ1P1P/2KRR3 w - - 0 1}{}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arabian Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Arabian Mate的关键是利用f6 Knight保护g8车或h7车，这是最古老的mate，
+
+\Needspace{110pt}
+\section{\texttwemoji{camel} Arabian Mate}
+
+The key to Arabian Mate is using the \underline{f6 knight} to protect a rook on g8 or h7. This is the oldest mating pattern.
+
+\GoalBoard[
+  markstyle=operathreat,markmove=h7-h8,
+  markstyle=attackray,markmove=h7-g7,
+  markstyle=attackray,markmove=f6-g8,
+  markstyle=protectray,markmove=f6-h7
+]{7k/7R/5N2/8/8/8/8/8 b - - 0 1}{e5-h8}
+
+\Needspace{205pt}
+\subsection{Pin the g pawn}
+
+Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barrier.
+
+\Position[
+  showmover=false,
+  markstyle=whiteplyone,markmove=e4-f6,
+  markstyle=attackray,markmove=g4-g8,
+  markstyle=operathreat,markmove=h1-h6
+]{2q2nk1/p4pp1/1p5p/2b5/4N1R1/P5p1/1P3PP1/6KR w - - 0 1}{1.Nf6}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Morphy Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Needspace{105pt}
+\section{\texttwemoji{crossed swords} Morphy Mate}
+
+Much similar with Opera Mating, which is also discovered by Morphy. It feels like dula-weapon, longswoard + shortsword.
+
+BTW, since g7 is proctected, there is a discover check trick to remove every thing on 7th line, when f8 is blocked by opponent piece, and g6 blocked by own piece.
+
+
+\GoalBoard[
+  markstyle=operathreat,markmove=f6-h8,
+  markstyle=operathreat,markmove=g5-g8,
+  backstyle=color,color=protectGreen!42,backfields={g7},
+]{7k/7p/5B2/6R1/8/8/8/8 b - - 0 1}{e5-h8}
+
+\Needspace{205pt}
+\subsection{Queen Takes the f6 Knight}
+
+Morphy Mate often happes in the corner, occupying f6 to remove g pawn for rook is the key. Bishop often goes to f6.
+
+\Position[
+  showmover=false,
+  markstyle=attackray,markmove=b2-h8,
+  markstyle=attackray,markmove=g1-g8,
+  markstyle=queenroute,markmove=d1-g1,
+  markstyle=whiteplyone,markmove=f2-f6
+]{r4rk1/pq3ppp/1p1p1n2/8/2P1p3/1P5P/PB3Q2/2KR4 w - - 0 1}{1.Qxf6}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Boden Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \end{document}
