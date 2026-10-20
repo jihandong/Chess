@@ -45,12 +45,15 @@
   \BoardArrow{#1}{#2}{1.1pt}{0pt}{0pt}%
   \pgftext[at=\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}]{%
     \ArrowLabel{#3}{#4}{#5}}}
-\cbDefinePgfMoveStyle{plyone}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{1}}
-\cbDefinePgfMoveStyle{plytwo}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}}
-\cbDefinePgfMoveStyle{plythree}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{2}}
-\cbDefinePgfMoveStyle{plyfour}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
-\cbDefinePgfMoveStyle{whiteplyone}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}}
-\cbDefinePgfMoveStyle{whiteplythree}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
+% markstyle={[n]ply}: White's blue move n; [-n]ply: Black's yellow move n.
+\cbDefinePgfMoveStyle{ply}{%
+  \ifnum#2<0
+    \BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{\number\numexpr-#2\relax}%
+  \else
+    \BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{#2}%
+  \fi}
+% Unnumbered arrows use the color passed through markstyle={[color]route}.
+\cbDefinePgfMoveStyle{route}{\BoardArrow{#1}{#2}{1.1pt}{0pt}{0pt}}
 \newcommand{\BoardOffsetMoveArrow}[7]{%
   \BoardArrow{#1}{#2}{1.1pt}{#6}{#7}%
   \pgftext[at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#6}{#7}}]{%
@@ -64,10 +67,8 @@
   \pgftext[at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#4}{#5}}]{%
     \ArrowLabel{threatYellow}{black}{#2}}}
 \cbDefinePgfMoveStyle{operakingone}{\OperaKingArrow{#1}{1}{-4pt}{-8pt}{-17pt}}
-\cbDefinePgfMoveStyle{operabishop}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}}
 \cbDefinePgfMoveStyle{operakingtwo}{\OperaKingArrow{#1}{2}{4pt}{8pt}{-17pt}}
 \cbDefinePgfMoveStyle{operarook}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}{3pt}{0pt}}
-\cbDefinePgfMoveStyle{operathreat}{\BoardArrow{#1}{attackRed}{1.1pt}{0pt}{0pt}}
 \cbDefinePgfMoveStyle{operadownthreat}{\BoardArrow{#1}{attackRed}{1.1pt}{6pt}{0pt}}
 \newcommand{\BoardInverseMoveArrow}[7]{%
   \BoardArrow{#1}{#2}{1.1pt}{0pt}{0pt}%
@@ -79,20 +80,10 @@
 % Shift the two rook rays to opposite sides of the f-file so both remain visible.
 \cbDefinePgfMoveStyle{rookrayleft}{\BoardArrow{#1}{attackRed}{1.2pt}{-2pt}{0pt}}
 \cbDefinePgfMoveStyle{rookrayright}{\BoardArrow{#1}{attackRed}{1.2pt}{2pt}{0pt}}
-\cbDefinePgfMoveStyle{queenroute}{\BoardArrow{#1}{moveBlue}{1.1pt}{0pt}{0pt}}
-\cbDefinePgfMoveStyle{yellowroute}{\BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{0pt}}
 \cbDefinePgfMoveStyle{kingroute}{\BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{2pt}}
 \cbDefinePgfMoveStyle{offsetattackray}{\BoardDashedArrow{#1}{0pt}{-3pt}}
-\cbDefinePgfRegionStyle{dashedredbox}{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1pt}%
-  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
-  \pgfpathrectanglecorners{\pgfpointxy{-0.44}{0.44}}%
-    {\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpointxy{0.44}{-0.44}}}%
-  \pgfusepath{stroke}}
 % An unnumbered dashed arrow shows an attack opened by a move.
 \cbDefinePgfMoveStyle{attackray}{\BoardDashedArrow{#1}{0pt}{0pt}}
-\cbDefinePgfMoveStyle{protectray}{\BoardArrow{#1}{protectGreen}{1.1pt}{0pt}{0pt}}
 \cbDefinePgfMoveStyle{goaloffsetattack}{\BoardDashedArrow{#1}{3pt}{0pt}}
 \newcommand{\Position}[3][]{%
   \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
@@ -127,10 +118,10 @@ With the f7-pawn gone, a diagonal reaches king.
   backstyle=color,color=attackRed!42,backfields={g6,f7,e8},
   markstyle=circle,color=movePurple,markfields={h7},
   markstyle=attackray,markmove=h5-e8,
-  markstyle=plyone,markmove=g7-g6,
-  markstyle=plytwo,markmove=h5-g6,
-  markstyle=plythree,markmove=h7-g6,
-  markstyle=plyfour,markmove=d3-g6
+  markstyle={[-1]ply},markmove=g7-g6,
+  markstyle={[2]ply},markmove=h5-g6,
+  markstyle={[-2]ply},markmove=h7-g6,
+  markstyle={[3]ply},markmove=d3-g6
 ]{rnbqkb1r/ppppp1pp/8/3n3Q/8/3B4/PPP2PPP/R1B1K1NR b - - 0 1}{1...g6 2.Qxg6+ hxg6 3.Bxg6\#}
 
 %如果出了后兵却仍然挡着后（罕见情况），也可以逼出f兵。
@@ -146,10 +137,10 @@ If the queen's pawn gong but still blocked (rare case). Earlier, the knight was 
   backstyle=color,color=attackRed!42,backfields={d8,f8},
   markstyle=circle,color=movePurple,markfields={h6},
   markstyle=attackray,markmove=h5-e8,
-  markstyle=plyone,markmove=f7-e6,
-  markstyle=plytwo,markmove=d1-h5,
-  markstyle=plythree,markmove=g7-g6,
-  markstyle=plyfour,markmove=h5-g6
+  markstyle={[-1]ply},markmove=f7-e6,
+  markstyle={[2]ply},markmove=d1-h5,
+  markstyle={[-2]ply},markmove=g7-g6,
+  markstyle={[3]ply},markmove=h5-g6
 ]{r1bqkbnr/pppnppp1/4N2p/8/4p3/2N5/PPPP1PPP/R1BQKB1R b - - 0 1}{1...fxe6 2.Qh5+ g6 3.Qxg6\#}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -181,9 +172,8 @@ f8 rook would suffer from tripple pressure now.
 \Position[
   markstyle=rookrayleft,markmove=f7-f8,
   markstyle=rookrayright,markmove=f1-f8,
-  markstyle=attackray,markmove=e7-e8,
-  markstyle=attackray,markmove=e7-f8,
-  markstyle=whiteplyone,markmove=c7-e7
+  markstyle=attackray,markmoves={e7-e8,e7-f8},
+  markstyle={[1]ply},markmove=c7-e7
 ]{4rrk1/2Q2Rpp/2p5/p7/3q4/8/2P3PP/5R1K w - - 0 1}{1. Qe7}
 \end{minipage}\par
 
@@ -204,20 +194,17 @@ This pattern is quite straightforward; the key lies in the support provided by t
 To reach this position, one usually needs to open h-file, which frequently involves sacrificing h-file rook, to clear a path for the queen.
 
 \GoalBoard[
-  markstyle=operathreat,markmove=h7-g8,
-  markstyle=attackray,markmove=h7-h8,
-  markstyle=attackray,markmove=g6-f7,
-  markstyle=protectray,markmove=g6-h7
+  markstyle={[attackRed]route},markmove=h7-g8,
+  markstyle=attackray,markmoves={h7-h8,g6-f7},
+  markstyle={[protectGreen]route},markmove=g6-h7
 ]{5rk1/6pQ/6P1/8/8/8/8/8 w - - 0 1}{e5-h8}
 
 \subsection{Opening the h-file}
 \noindent\makebox[\columnwidth][c]{\chessboard[
   setfen={3r1rk1/1p3pp1/1qp3P1/2nnp3/p7/3B1P2/PPP3P1/1K1QR2R w - - 0 1},
   showmover=false,
-  markstyle=queenroute,markmove=d1-h1,
-  markstyle=queenroute,markmove=h1-h7,
-  markstyle=attackray,markmove=h7-g8,
-  markstyle=attackray,markmove=h7-h8,
+  markstyle={[moveBlue]route},markmoves={d1-h1,h1-h7},
+  markstyle=attackray,markmoves={h7-g8,h7-h8},
 ]}\par\nobreak
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -229,9 +216,9 @@ To reach this position, one usually needs to open h-file, which frequently invol
 This pattern sometime arises in the corner(see d-file as a-file or h-file), when gh pawns are gone.
 
 \GoalBoard[
-  markstyle=operathreat,markmove=d8-e8,
+  markstyle={[attackRed]route},markmove=d8-e8,
   markstyle=goaloffsetattack,markmove=g5-e7,
-  markstyle=protectray,markmove=g5-d8
+  markstyle={[protectGreen]route},markmove=g5-d8
 ]{3Rkb2/5pp1/8/6B1/8/8/8/8 w - - 0 1}{d5-g8}
 
 \subsection{Queen Sacrifice \& Double Check}
@@ -239,12 +226,12 @@ This pattern sometime arises in the corner(see d-file as a-file or h-file), when
 The queen sacrifice draws the black king onto the d-file. The bishop then moves with check, clearing the rook's path to d8.
 
 \Position[
-  markstyle=operathreat,markmove=d8-h8,
+  markstyle={[attackRed]route},markmove=d8-h8,
   markstyle=operadownthreat,markmove=d8-d1,
-  markstyle=operathreat,markmove=g5-d8,
+  markstyle={[attackRed]route},markmove=g5-d8,
   markstyle=operaqueen,markmove=d3-d8,
   markstyle=operakingone,markmove=e8-d8,
-  markstyle=operabishop,markmove=d2-g5,
+  markstyle={[2]ply},markmove=d2-g5,
   markstyle=operakingtwo,markmove=d8-e8,
   markstyle=operarook,markmove=d1-d8
 ]{rnb1kb1r/pp3ppp/2p5/4q3/4n3/3Q4/PPPB1PPP/2KR1BNR w - - 0 1}{1.Qd8+ Kxd8 2.Bg5+ Ke8 3.Rd8\#}
@@ -255,11 +242,10 @@ The queen sacrifice draws the black king onto the d-file. The bishop then moves 
 
 \Position[
   showmover=false,
-  markstyle=operathreat,markmove=e1-e8,
+  markstyle={[attackRed]route},markmove=e1-e8,
   markstyle=attackray,markmove=c6-e8,
   markstyle=offsetattackray,markmove=e8-f8,
-  markstyle=queenroute,markmove=f3-c6,
-  markstyle=queenroute,markmove=d2-d7,
+  markstyle={[moveBlue]route},markmoves={f3-c6,d2-d7},
   markstyle=kingroute,markmove=e8-f8
 ]{r1b1k2r/1p2bppp/p1n2q2/8/8/5B2/PPPQ1P1P/2KRR3 w - - 0 1}{}
 
@@ -273,10 +259,9 @@ The queen sacrifice draws the black king onto the d-file. The bishop then moves 
 The key to Arabian Mate is using the \underline{f6 knight} to protect a rook on g8 or h7. This is the oldest mating pattern.
 
 \GoalBoard[
-  markstyle=operathreat,markmove=h7-h8,
-  markstyle=attackray,markmove=h7-g7,
-  markstyle=attackray,markmove=f6-g8,
-  markstyle=protectray,markmove=f6-h7
+  markstyle={[attackRed]route},markmove=h7-h8,
+  markstyle=attackray,markmoves={h7-g7,f6-g8},
+  markstyle={[protectGreen]route},markmove=f6-h7
 ]{7k/7R/5N2/8/8/8/8/8 b - - 0 1}{e5-h8}
 
 \noindent\begin{minipage}{\columnwidth}
@@ -286,9 +271,9 @@ Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barr
 
 \Position[
   showmover=false,
-  markstyle=whiteplyone,markmove=e4-f6,
+  markstyle={[1]ply},markmove=e4-f6,
   markstyle=attackray,markmove=g4-g8,
-  markstyle=operathreat,markmove=h1-h6
+  markstyle={[attackRed]route},markmove=h1-h6
 ]{2q2nk1/p4pp1/1p5p/2b5/4N1R1/P5p1/1P3PP1/6KR w - - 0 1}{1.Nf6}
 \end{minipage}\par
 
@@ -301,8 +286,7 @@ Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barr
 Much similar with Opera Mating, which is also discovered by Morphy. It feels like dula-weapon, longswoard + shortsword.
 
 \GoalBoard[
-  markstyle=operathreat,markmove=f6-h8,
-  markstyle=operathreat,markmove=g5-g8,
+  markstyle={[attackRed]route},markmoves={f6-h8,g5-g8},
   backstyle=color,color=protectGreen!42,backfields={g7},
 ]{7k/7p/5B2/6R1/8/8/8/8 b - - 0 1}{e5-h8}
 
@@ -312,10 +296,9 @@ Morphy Mate often happes in the corner, occupying f6 to remove g pawn for rook i
 
 \Position[
   showmover=false,
-  markstyle=attackray,markmove=b2-h8,
-  markstyle=attackray,markmove=g1-g8,
-  markstyle=queenroute,markmove=d1-g1,
-  markstyle=whiteplyone,markmove=f2-f6
+  markstyle=attackray,markmoves={b2-h8,g1-g8},
+  markstyle={[moveBlue]route},markmove=d1-g1,
+  markstyle={[1]ply},markmove=f2-f6
 ]{r4rk1/pq3ppp/1p1p1n2/8/2P1p3/1P5P/PB3Q2/2KR4 w - - 0 1}{1.Qxf6}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -329,8 +312,7 @@ Bishop pair cross mate, similar to Morphy Mate, this time we have the same dual 
 % Minimal a6/f4 mating net: the black knight and rook block d7 and d8.
 \GoalBoard[
   showmover=true,
-  markstyle=operathreat,markmove=a6-c8,
-  markstyle=operathreat,markmove=f4-b8
+  markstyle={[attackRed]route},markmoves={a6-c8,f4-b8}
 ]{2kr4/3n4/B7/8/5B2/8/8/6K1 b - - 0 1}{a4-f8}
 
 \subsection{Double Check and Queen Sacrifice}
@@ -339,13 +321,12 @@ We ofen need to remove \underline{b or g pawn to} make path for 2nd bishop, this
 
 \Position[
   backstyle=color,color=attackRed!42,backfields={b7},
-  markstyle=attackray,markmove=f4-b8,
-  markstyle=attackray,markmove=a6-c8,
-  markstyle=whiteplyone,markmove=e5-d7,
-  markstyle=plyone,markmove=b8-c8,
-  markstyle=plytwo,markmove=b2-b7,
-  markstyle=plythree,markmove=c8-b7,
-  markstyle=plyfour,markmove=e2-a6
+  markstyle=attackray,markmoves={f4-b8,a6-c8},
+  markstyle={[1]ply},markmove=e5-d7,
+  markstyle={[-1]ply},markmove=b8-c8,
+  markstyle={[2]ply},markmove=b2-b7,
+  markstyle={[-2]ply},markmove=c8-b7,
+  markstyle={[3]ply},markmove=e2-a6
 ]{rk1r3q/pp2bp2/2p1p1p1/3nN2p/5B2/7P/1Q2BPP1/R5K1 w - - 0 1}{1.Nd7+ Kc8 2.Qxb7+ Kxb7 3.Ba6\#}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -361,9 +342,7 @@ Be aware the Epaulette can only be rook or pawns (seems almost impossible in pra
   \chessboard[
     setfen={3rkr2/8/4Q3/8/8/8/8/K7 b - - 0 1},
     printarea={c6-g8},boardfontsize=16pt,showmover=true,
-    markstyle=operathreat,markmove=e6-e8,
-    markstyle=operathreat,markmove=e6-d7,
-    markstyle=operathreat,markmove=e6-f7
+    markstyle={[attackRed]route},markmoves={e6-e8,e6-d7,e6-f7}
   ]\par
 \end{minipage}\hfill
 \begin{minipage}[t]{0.48\columnwidth}
@@ -371,8 +350,7 @@ Be aware the Epaulette can only be rook or pawns (seems almost impossible in pra
   \chessboard[
     setfen={3rkr2/2R5/4R3/8/8/8/8/K7 b - - 0 1},
     printarea={c6-g8},boardfontsize=16pt,showmover=true,
-    markstyle=operathreat,markmove=e6-e8,
-    markstyle=operathreat,markmove=c7-f7
+    markstyle={[attackRed]route},markmoves={e6-e8,c7-f7}
   ]\par
 \end{minipage}\par
 
@@ -386,23 +364,19 @@ The key pattern is the L structure, unlike Epaulette Mate, this one need a prote
 
 \GoalBoard[
   showmover=true,
-  markstyle=attackray,markmove=g6-e6,
-  markstyle=attackray,markmove=g6-g8,
-  markstyle=operathreat,markmove=g6-e8,
-  markstyle=protectray,markmove=f5-g6
+  markstyle=attackray,markmoves={g6-e6,g6-g8},
+  markstyle={[attackRed]route},markmove=g6-e8,
+  markstyle={[protectGreen]route},markmove=f5-g6
 ]{5r2/4qk2/6Q1/5P2/8/8/8/K7 b - - 0 1}{d5-g8}
 
 \subsection{Discover Check \& Blocking}
 \noindent\makebox[\columnwidth][c]{\chessboard[
   setfen={6k1/1b3ppp/5q2/p7/P2Qn3/2NP2P1/2P3KP/1R2R1B1 b - - 0 1},
   inverse=true,showmover=true,
-  markstyle=attackray,markmove=b7-g2,
-  markstyle=attackray,markmove=g5-h3,
-  markstyle=queenroute,markmove=e4-g5,
-  markstyle=queenroute,markmove=f6-f3,
-  markstyle=yellowroute,markmove=d4-d5,
-  markstyle=yellowroute,markmove=d4-e4,
-  markstyle=protectray,markmove=g5-f3,
+  markstyle=attackray,markmoves={b7-g2,g5-h3},
+  markstyle={[moveBlue]route},markmoves={e4-g5,f6-f3},
+  markstyle={[threatYellow]route},markmoves={d4-d5,d4-e4},
+  markstyle={[protectGreen]route},markmove=g5-f3,
 ]}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -413,11 +387,11 @@ Must have \underline{g5 Knight without being kicked away}, then you can attack g
 
 \GoalBoard[
   showmover=true,
-  markstyle=whiteplyone,markmove=g5-f7,
+  markstyle={[1]ply},markmove=g5-f7,
   markstyle=smotherknighttwo,markmove=f7-h6,
-  markstyle=whiteplythree,markmove=d5-g8,
+  markstyle={[3]ply},markmove=d5-g8,
   markstyle=smotherknightfour,markmove=h6-f7,
-  markstyle=yellowroute,markmove=g8-h8
+  markstyle={[threatYellow]route},markmove=g8-h8
 ]{4r2k/6pp/8/3Q2N1/8/8/8/1K6 w - - 0 1}{d5-h8}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -427,26 +401,35 @@ Must have \underline{g5 Knight without being kicked away}, then you can attack g
 
 \GoalBoard[
   showmover=true,
-  markstyle=operathreat,markmove=e4-h1,
-  markstyle=operathreat,markmove=e3-g1
-]{k7/8/8/8/4b3/4b3/7P/7K w - - 0 1}{e1-h4}
+  markstyle={[attackRed]route},markmoves={e4-h1,e3-g1}
+]{K7/8/8/8/4B3/4B3/7p/5R1k b - - 0 1}{e1-h4}
 
 \subsection{Mighty Discover Check}
 When discover check, you can double check or attack another piece, queen is obviously the best option.
 
 \Position[
   inverse=true,
-  markstyle=queenroute,markmove=e8-e4,
-  markstyle=queenroute,markmove=e4-a4,
-  markstyle=operathreat,markmove=e3-g1,
-  markstyle=operathreat,markmove=b7-h1,
-  markstyle=yellowroute,markmove=h1-g2,
+  markstyle={[moveBlue]route},markmoves={e8-e4,e4-a4},
+  markstyle={[attackRed]route},markmoves={e3-g1,b7-h1},
+  markstyle={[threatYellow]route},markmove=h1-g2,
   markstyle=attackray,markmove=a4-a3,
 ]{4r2k/1b5p/1p6/p1p5/4P3/QP1Bb1P1/P6P/7K b - - 0 1}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Legal's Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{L\'egal's Mate}
+
+\Position[
+  markstyle={[threatYellow]route},markmoves={h2-h3,g4-h5}
+]{r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w - - 0 1}{}
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={e7,f6},
+  backstyle=color,color=moveBlue!42,backfields={g5},
+  markstyle={[attackRed]route},markmoves={d5-e7,d5-f6,e5-d7,f7-e8,f7-e6},
+  markstyle={[protectGreen]route},markmove=e5-f7
+]{r2q1bnr/ppp1kBpp/2np4/3NN3/4P3/7P/PPPP1PP1/R1BbK2R b - - 0 1}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Anatasia Mate
