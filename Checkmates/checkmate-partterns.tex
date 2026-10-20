@@ -84,6 +84,7 @@
 \cbDefinePgfMoveStyle{offsetattackray}{\BoardDashedArrow{#1}{0pt}{-3pt}}
 % An unnumbered dashed arrow shows an attack opened by a move.
 \cbDefinePgfMoveStyle{attackray}{\BoardDashedArrow{#1}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{dashroute}{\pgfsetdash{{2pt}{1.5pt}}{0pt}\BoardArrow{#1}{#2}{1pt}{0pt}{0pt}}
 \cbDefinePgfMoveStyle{goaloffsetattack}{\BoardDashedArrow{#1}{3pt}{0pt}}
 \newcommand{\Position}[3][]{%
   \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
@@ -217,6 +218,7 @@ This pattern sometime arises in the corner(see d-file as a-file or h-file), when
 
 \GoalBoard[
   markstyle={[attackRed]route},markmove=d8-e8,
+  markstyle=goaloffsetattack,markmove=d8-d7,
   markstyle=goaloffsetattack,markmove=g5-e7,
   markstyle={[protectGreen]route},markmove=g5-d8
 ]{3Rkb2/5pp1/8/6B1/8/8/8/8 w - - 0 1}{d5-g8}
@@ -402,7 +404,7 @@ Must have \underline{g5 Knight without being kicked away}, then you can attack g
 \GoalBoard[
   showmover=true,
   markstyle={[attackRed]route},markmoves={e4-h1,e3-g1}
-]{K7/8/8/8/4B3/4B3/7p/5R1k b - - 0 1}{e1-h4}
+]{K7/8/8/8/4B3/4B3/7p/5r1k b - - 0 1}{e1-h4}
 
 \subsection{Mighty Discover Check}
 When discover check, you can double check or attack another piece, queen is obviously the best option.
@@ -416,13 +418,45 @@ When discover check, you can double check or attack another piece, queen is obvi
 ]{4r2k/1b5p/1p6/p1p5/4P3/QP1Bb1P1/P6P/7K b - - 0 1}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Anastasia's Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%与Back Rank 类似，但发生在file而非rank上
+%如果没法造出底线，就得考虑damiano了
+%和damiano一样都常常需要弃子开h-file
+\section{Anastasia's Mate}
+
+Similar to Back Rank Mate, but happens on file instead of rank. Also similar to damiano's mate, it often needs sacrafice to \underline{open h-file}.
+
+\GoalBoard[
+  showmover=true,
+  markstyle={[attackRed]route},markmove=h4-h8,
+  markstyle=attackray,markmoves={e7-g8,e7-g6}
+]{2r5/4Nppk/8/8/7R/8/8/K7 b - - 0 1}{c4-h8}
+
+\subsection{Luring Away the h-pawn}
+
+\Position[
+  backstyle=color,color=attackRed!42,backfields={g6},
+  markstyle={[threatYellow]route},markmoves={f7-g6,h7-g6},
+  markstyle={[moveBlue]route},markmove=f5-e7,
+  markstyle={[moveBlue]dashroute},markmoves={e7-g6,f4-g6},
+  markstyle=attackray,markmoves={g6-h8,c4-g8}
+]{1r3rk1/5ppp/8/q1p2N2/2Bp1N2/1p4P1/PP3PP1/K2RR3 w - - 0 1}{}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Legal's Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{L\'egal's Mate}
 
+Much more complex open game trap. Ignore the pinning, sacrafice queen to checkmate by 3 minor pieces.
+
 \Position[
-  markstyle={[threatYellow]route},markmoves={h2-h3,g4-h5}
+  markstyle={[threatYellow]route},markmoves={g4-h5},
+  markstyle={[moveBlue]route},markmoves={h2-h3}
 ]{r2qkbnr/ppp2ppp/2np4/4p2b/2B1P3/2N2N1P/PPPP1PP1/R1BQK2R w - - 0 1}{}
+
+The d5 knight can be replaced by a bishop since it's a 2-squared diagnal, black can set this trap too.
 
 \Position[
   backstyle=color,color=attackRed!42,backfields={e7,f6},
@@ -430,10 +464,6 @@ When discover check, you can double check or attack another piece, queen is obvi
   markstyle={[attackRed]route},markmoves={d5-e7,d5-f6,e5-d7,f7-e8,f7-e6},
   markstyle={[protectGreen]route},markmove=e5-f7
 ]{r2q1bnr/ppp1kBpp/2np4/3NN3/4P3/7P/PPPP1PP1/R1BbK2R b - - 0 1}{}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Anatasia Mate
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Forrest Gump Mate
