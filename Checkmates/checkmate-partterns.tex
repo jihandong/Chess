@@ -6,7 +6,7 @@
 \setlength{\parskip}{0pt}
 \linespread{0.96}
 \ctexset{
-  section={format=\raggedright\bfseries\large,beforeskip=7pt,afterskip=3pt},
+  section={format=\raggedright\bfseries\Large,beforeskip=7pt,afterskip=3pt},
   subsection={format=\raggedright\bfseries\normalsize,beforeskip=5pt,afterskip=2pt}
 }
 \usepackage{microtype}
@@ -29,14 +29,21 @@
   \begingroup\setlength{\fboxsep}{0.5pt}%
   \colorbox{#1}{\textcolor{#2}{{\arrowlabelfont\fontsize{6}{6}\selectfont #3}}}%
   \endgroup}
+% All board arrows share one path; styles below only choose color, offset,
+% line weight, dashes, and (where needed) a move label.
+\newcommand{\BoardArrow}[5]{%
+  \pgfsetstrokecolor{#2}%
+  \pgfsetlinewidth{#3}%
+  \pgfsetarrowsend{stealth}%
+  \pgfpathmoveto{\pgfpoint{#4}{#5}}%
+  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{#4}{#5}}}%
+  \pgfusepath{stroke}}
+\newcommand{\BoardDashedArrow}[3]{%
+  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
+  \BoardArrow{#1}{attackRed}{1pt}{#2}{#3}}
 % Black moves: yellow arrow and label; White moves: blue arrow and label.
 \newcommand{\BoardMoveArrow}[5]{%
-  \pgfsetstrokecolor{#2}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointorigin}%
-  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
-  \pgfusepath{stroke}%
+  \BoardArrow{#1}{#2}{1.1pt}{0pt}{0pt}%
   \pgftext[at=\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}]{%
     \ArrowLabel{#3}{#4}{#5}}}
 \cbDefinePgfMoveStyle{plyone}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{1}}
@@ -45,81 +52,34 @@
 \cbDefinePgfMoveStyle{plyfour}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
 \cbDefinePgfMoveStyle{whiteplyone}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}}
 \newcommand{\BoardOffsetMoveArrow}[7]{%
-  \pgfsetstrokecolor{#2}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{#6}{#7}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{#6}{#7}}}%
-  \pgfusepath{stroke}%
+  \BoardArrow{#1}{#2}{1.1pt}{#6}{#7}%
   \pgftext[at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#6}{#7}}]{%
     \ArrowLabel{#3}{#4}{#5}}}
 \cbDefinePgfMoveStyle{operaqueen}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}{-3pt}{0pt}}
 \newcommand{\OperaKingArrow}[5]{%
-  \pgfsetstrokecolor{threatYellow}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{0pt}{#3}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{0pt}{#3}}}%
-  \pgfusepath{stroke}%
+  \BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{#3}%
   \pgftext[at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#4}{#5}}]{%
     \ArrowLabel{threatYellow}{black}{#2}}}
 \cbDefinePgfMoveStyle{operakingone}{\OperaKingArrow{#1}{1}{-4pt}{-8pt}{-17pt}}
 \cbDefinePgfMoveStyle{operabishop}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}}
 \cbDefinePgfMoveStyle{operakingtwo}{\OperaKingArrow{#1}{2}{4pt}{8pt}{-17pt}}
 \cbDefinePgfMoveStyle{operarook}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}{3pt}{0pt}}
-\newcommand{\OperaThreatArrow}[3]{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{#2}{#3}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{#2}{#3}}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{operathreat}{\OperaThreatArrow{#1}{0pt}{0pt}}
-\cbDefinePgfMoveStyle{operadownthreat}{\OperaThreatArrow{#1}{6pt}{0pt}}
+\cbDefinePgfMoveStyle{operathreat}{\BoardArrow{#1}{attackRed}{1.1pt}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{operadownthreat}{\BoardArrow{#1}{attackRed}{1.1pt}{6pt}{0pt}}
 \newcommand{\BoardInverseMoveArrow}[7]{%
-  \pgfsetstrokecolor{#2}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointorigin}%
-  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
-  \pgfusepath{stroke}%
+  \BoardArrow{#1}{#2}{1.1pt}{0pt}{0pt}%
   \pgftext[rotate=180,at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#6}{#7}}]{%
     \ArrowLabel{#3}{#4}{#5}}}
 \cbDefinePgfMoveStyle{backrankqueen}{\BoardInverseMoveArrow{#1}{threatYellow}{threatYellow}{black}{1}{10pt}{0pt}}
 \cbDefinePgfMoveStyle{backrankwhiterook}{\BoardInverseMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}{0pt}{-4pt}}
 \cbDefinePgfMoveStyle{backrankblackrook}{\BoardInverseMoveArrow{#1}{threatYellow}{threatYellow}{black}{2}{-8pt}{0pt}}
 % Shift the two rook rays to opposite sides of the f-file so both remain visible.
-\newcommand{\StackedRookArrow}[2]{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1.2pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointadd{\pgfpointorigin}{\pgfpoint{#2}{0pt}}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{#2}{0pt}}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{rookrayleft}{\StackedRookArrow{#1}{-2pt}}
-\cbDefinePgfMoveStyle{rookrayright}{\StackedRookArrow{#1}{2pt}}
-\cbDefinePgfMoveStyle{queenroute}{%
-  \pgfsetstrokecolor{moveBlue}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointorigin}%
-  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{kingroute}{%
-  \pgfsetstrokecolor{threatYellow}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{0pt}{2pt}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{0pt}{2pt}}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{offsetattackray}{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1pt}%
-  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{0pt}{-3pt}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{0pt}{-3pt}}}%
-  \pgfusepath{stroke}}
+\cbDefinePgfMoveStyle{rookrayleft}{\BoardArrow{#1}{attackRed}{1.2pt}{-2pt}{0pt}}
+\cbDefinePgfMoveStyle{rookrayright}{\BoardArrow{#1}{attackRed}{1.2pt}{2pt}{0pt}}
+\cbDefinePgfMoveStyle{queenroute}{\BoardArrow{#1}{moveBlue}{1.1pt}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{yellowroute}{\BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{kingroute}{\BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{2pt}}
+\cbDefinePgfMoveStyle{offsetattackray}{\BoardDashedArrow{#1}{0pt}{-3pt}}
 \cbDefinePgfRegionStyle{dashedredbox}{%
   \pgfsetstrokecolor{attackRed}%
   \pgfsetlinewidth{1pt}%
@@ -128,29 +88,9 @@
     {\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpointxy{0.44}{-0.44}}}%
   \pgfusepath{stroke}}
 % An unnumbered dashed arrow shows an attack opened by a move.
-\cbDefinePgfMoveStyle{attackray}{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1pt}%
-  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointorigin}%
-  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{protectray}{%
-  \pgfsetstrokecolor{protectGreen}%
-  \pgfsetlinewidth{1.1pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpointorigin}%
-  \pgfpathlineto{\pgfpointanchor{#1}{center}}%
-  \pgfusepath{stroke}}
-\cbDefinePgfMoveStyle{goaloffsetattack}{%
-  \pgfsetstrokecolor{attackRed}%
-  \pgfsetlinewidth{1pt}%
-  \pgfsetdash{{2pt}{1.5pt}}{0pt}%
-  \pgfsetarrowsend{stealth}%
-  \pgfpathmoveto{\pgfpoint{3pt}{0pt}}%
-  \pgfpathlineto{\pgfpointadd{\pgfpointanchor{#1}{center}}{\pgfpoint{3pt}{0pt}}}%
-  \pgfusepath{stroke}}
+\cbDefinePgfMoveStyle{attackray}{\BoardDashedArrow{#1}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{protectray}{\BoardArrow{#1}{protectGreen}{1.1pt}{0pt}{0pt}}
+\cbDefinePgfMoveStyle{goaloffsetattack}{\BoardDashedArrow{#1}{3pt}{0pt}}
 \newcommand{\Position}[3][]{%
   \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
   \noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesubsection\quad #3}}\par%
@@ -216,15 +156,7 @@ Earlier, the knight was on g5. Against:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Back Rank Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% The key is to seize the back rank. The amount of force depends on how many pieces are stacked and connected; however many there are, they are useless if scattered.
-% Do not let the opponent's rook and queen stack up; if they do, the back rank cannot be defended.
-% The stacking here is unusual: starting from the attack point on the back rank, stack the rook and queen along a file, and the queen along a diagonal. So it is not really "stacking"; the core is concentrating firepower.
-  % This algorithm is complicated; the opponent's force must also be calculated for each square.
-  % Calculate it this way: for each back-rank square, add +1/-1 for occupation and attack. Finding or creating a square with a score greater than 0 means mate is possible.
-% Do not let the opponent's rook and queen reach the king's side; the king can block them.
 \section{Back-Rank Mate}
-
 
 % 关键点是集中火力到格子，以及引离保护底线的车后。
 The key is to \textcolor{red}{concentrate firepower} and \textcolor{red}{draw away the rook and queen protecting the back rank}.
@@ -417,6 +349,7 @@ Bishop pair cross mate, similar to Morphy Mate, this time we have the same dual 
 We ofen need to remove \underline{b or g pawn to} make path for 2nd bishop, this involving sacrifice.
 
 \Position[
+  backstyle=color,color=attackRed!42,backfields={b7},
   markstyle=attackray,markmove=f4-b8,
   markstyle=attackray,markmove=a6-c8,
   markstyle=whiteplyone,markmove=e5-d7,
@@ -456,5 +389,59 @@ Be aware the Epaulette can only be rook or pawns (seems almost impossible in pra
   ]\par
   {\footnotesize\bfseries Two rooks}
 \end{minipage}\par
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Dovetail Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Needspace{190pt}
+\section{\texttwemoji{dove} Dovetail Mate}
+
+The key pattern is the L structure, unlike Epaulette Mate, this one need a protector.
+
+\GoalBoard[
+  showmover=true,
+  markstyle=attackray,markmove=g6-e6,
+  markstyle=attackray,markmove=g6-g8,
+  markstyle=operathreat,markmove=g6-e8,
+  markstyle=protectray,markmove=f5-g6
+]{5r2/4qk2/6Q1/5P2/8/8/8/K7 b - - 0 1}{d5-g8}
+
+\Needspace{205pt}
+\subsection{Discover Check \& Blocking}
+\noindent\makebox[\columnwidth][c]{\chessboard[
+  setfen={6k1/1b3ppp/5q2/p7/P2Qn3/2NP2P1/2P3KP/1R2R1B1 b - - 0 1},
+  inverse=true,showmover=true,
+  markstyle=attackray,markmove=b7-g2,
+  markstyle=attackray,markmove=g5-h3,
+  markstyle=queenroute,markmove=e4-g5,
+  markstyle=queenroute,markmove=f6-f3,
+  markstyle=yellowroute,markmove=d4-d5,
+  markstyle=yellowroute,markmove=d4-e4,
+  markstyle=protectray,markmove=g5-f3,
+]}\par
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Smothered Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\texttwemoji{mouse trap} Smothered Mate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Double Bishop Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\texttwemoji{dagger} Double Bishop Mate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Legal's Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Anatasia Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Forrest Gump Mate
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \end{document}
