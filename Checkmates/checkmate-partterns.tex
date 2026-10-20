@@ -10,7 +10,6 @@
   subsection={format=\raggedright\bfseries\normalsize,beforeskip=5pt,afterskip=2pt}
 }
 \usepackage{microtype}
-\usepackage{needspace}
 \usepackage{enumitem}
 \setlist[itemize]{nosep}
 \usepackage{xcolor}
@@ -22,7 +21,7 @@
 \usepackage{chessboard}
 \usepackage{twemojis}
 \usepackage{newunicodechar}
-\setchessboard{boardfontsize=17pt,showmover=true,moverstyle=square}
+\setchessboard{boardfontsize=16pt,showmover=true,moverstyle=square}
 
 \newfontfamily\arrowlabelfont{Latin Modern Sans}
 \newcommand{\ArrowLabel}[3]{%
@@ -51,10 +50,14 @@
 \cbDefinePgfMoveStyle{plythree}{\BoardMoveArrow{#1}{threatYellow}{threatYellow}{black}{2}}
 \cbDefinePgfMoveStyle{plyfour}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
 \cbDefinePgfMoveStyle{whiteplyone}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}}
+\cbDefinePgfMoveStyle{whiteplythree}{\BoardMoveArrow{#1}{moveBlue}{moveBlue}{white}{3}}
 \newcommand{\BoardOffsetMoveArrow}[7]{%
   \BoardArrow{#1}{#2}{1.1pt}{#6}{#7}%
   \pgftext[at=\pgfpointadd{\pgfpointscale{0.5}{\pgfpointanchor{#1}{center}}}{\pgfpoint{#6}{#7}}]{%
     \ArrowLabel{#3}{#4}{#5}}}
+% The knight's second and fourth moves use the same diagonal in reverse.
+\cbDefinePgfMoveStyle{smotherknighttwo}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{2}{-2pt}{-4pt}}
+\cbDefinePgfMoveStyle{smotherknightfour}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{4}{2pt}{4pt}}
 \cbDefinePgfMoveStyle{operaqueen}{\BoardOffsetMoveArrow{#1}{moveBlue}{moveBlue}{white}{1}{-3pt}{0pt}}
 \newcommand{\OperaKingArrow}[5]{%
   \BoardArrow{#1}{threatYellow}{1.1pt}{0pt}{#3}%
@@ -93,24 +96,22 @@
 \cbDefinePgfMoveStyle{goaloffsetattack}{\BoardDashedArrow{#1}{3pt}{0pt}}
 \newcommand{\Position}[3][]{%
   \par\noindent\makebox[\columnwidth][c]{\chessboard[setfen={#2},#1]}\par\nobreak
-  \noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesubsection\quad #3}}\par%
+  \if\relax\detokenize{#3}\relax\else
+    \noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries #3}}\par
+  \fi%
 }
 \newcommand{\GoalBoard}[3][]{%
-  \Needspace{90pt}%
-  \par\vspace{-5pt}\noindent\makebox[\columnwidth][c]{\chessboard[
-    setfen={#2},printarea={#3},boardfontsize=18pt,showmover=false,#1]}\par\nobreak
-  \vspace{-1pt}\noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesection}}\par\vspace{-2pt}%
+  \par\noindent\makebox[\columnwidth][c]{\chessboard[
+    setfen={#2},printarea={#3},boardfontsize=18pt,showmover=false,#1]}\par%
 }
 
 \begin{document}
 \pagestyle{plain}
 \twocolumn[{%
-  \begin{center}
-    {\Large\bfseries Checkmate Patterns\par}
-    \vspace{2pt}
-    {\small Tactical Motifs \quad\textbar\quad \the\year/\the\month/\the\day\par}
-  \end{center}
-  \vspace{-7pt}
+  \centering
+  {\Large\bfseries Checkmate Patterns\par}
+  {\small Tactical Motifs \quad\textbar\quad \the\year/\the\month/\the\day\par}
+  \smallskip
 }]
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -120,7 +121,7 @@
 \section[Fool's Mate]{\texttwemoji{clown face} Fool's Mate}
 \subsection{Queen Sacrifice on g6}
 
-With the f7-pawn gone, the h5--e8 diagonal reaches the black king.
+With the f7-pawn gone, a diagonal reaches king.
 
 \Position[
   backstyle=color,color=attackRed!42,backfields={g6,f7,e8},
@@ -135,12 +136,10 @@ With the f7-pawn gone, the h5--e8 diagonal reaches the black king.
 %如果出了后兵却仍然挡着后（罕见情况），也可以逼出f兵。
 \subsection{Knight Sacrifice on e6}
 
-If the queen's pawn has advanced but the queen is still blocked (a rare case), the f-pawn can also be drawn out.
-
-Earlier, the knight was on g5. Against:
+If the queen's pawn gong but still blocked (rare case). Earlier, the knight was on g5. Against:
 \begin{itemize}
   \item ...f6: Ne6 can get the trapped queen!
-  \item ...h6: on above case.
+  \item ...h6: Might also checkmate.
 \end{itemize}
 
 \Position[
@@ -165,7 +164,6 @@ The key is to \textcolor{red}{concentrate firepower} and \textcolor{red}{draw aw
 
 Qf2 not only has a chance to draw away the f1 rook, but also blocks the opponent's attack on f7.
 
-\begin{figure}[t]
 \Position[
   inverse=true,
   backstyle=color,color=attackRed!42,backfields={f7,e1},
@@ -174,13 +172,12 @@ Qf2 not only has a chance to draw away the f1 rook, but also blocks the opponent
   markstyle=backrankwhiterook,markmove=f1-g1,
   markstyle=backrankblackrook,markmove=e8-e1
 ]{4rbk1/3Q1ppp/3p4/3P4/3q4/B7/P5PP/5R1K b - - 0 1}{1...Qf2 2.Rg1 Re1}
-\end{figure}
 
+\noindent\begin{minipage}{\columnwidth}
 \subsection{Overload Defender Rook}
 
 f8 rook would suffer from tripple pressure now.
 
-\begin{figure}[t]
 \Position[
   markstyle=rookrayleft,markmove=f7-f8,
   markstyle=rookrayright,markmove=f1-f8,
@@ -188,7 +185,7 @@ f8 rook would suffer from tripple pressure now.
   markstyle=attackray,markmove=e7-f8,
   markstyle=whiteplyone,markmove=c7-e7
 ]{4rrk1/2Q2Rpp/2p5/p7/3q4/8/2P3PP/5R1K w - - 0 1}{1. Qe7}
-\end{figure}
+\end{minipage}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Kiss of Death TODO
@@ -213,7 +210,6 @@ To reach this position, one usually needs to open h-file, which frequently invol
   markstyle=protectray,markmove=g6-h7
 ]{5rk1/6pQ/6P1/8/8/8/8/8 w - - 0 1}{e5-h8}
 
-\Needspace{205pt}
 \subsection{Opening the h-file}
 \noindent\makebox[\columnwidth][c]{\chessboard[
   setfen={3r1rk1/1p3pp1/1qp3P1/2nnp3/p7/3B1P2/PPP3P1/1K1QR2R w - - 0 1},
@@ -223,13 +219,11 @@ To reach this position, one usually needs to open h-file, which frequently invol
   markstyle=attackray,markmove=h7-g8,
   markstyle=attackray,markmove=h7-h8,
 ]}\par\nobreak
-\noindent\makebox[\columnwidth][c]{{\footnotesize\bfseries Fig.~\thesubsection}}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Opera Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Needspace{100pt}
 \section{\texttwemoji{performing arts} Opera Mate}
 
 This pattern sometime arises in the corner(see d-file as a-file or h-file), when gh pawns are gone.
@@ -244,7 +238,6 @@ This pattern sometime arises in the corner(see d-file as a-file or h-file), when
 % 通过弃后和双将取胜
 The queen sacrifice draws the black king onto the d-file. The bishop then moves with check, clearing the rook's path to d8.
 
-\Needspace{180pt}
 \Position[
   markstyle=operathreat,markmove=d8-h8,
   markstyle=operadownthreat,markmove=d8-d1,
@@ -260,7 +253,6 @@ The queen sacrifice draws the black king onto the d-file. The bishop then moves 
 
 % 消除马的保护和利用
 
-\Needspace{180pt}
 \Position[
   showmover=false,
   markstyle=operathreat,markmove=e1-e8,
@@ -276,7 +268,6 @@ The queen sacrifice draws the black king onto the d-file. The bishop then moves 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Arabian Mate的关键是利用f6 Knight保护g8车或h7车，这是最古老的mate，
 
-\Needspace{110pt}
 \section{\texttwemoji{camel} Arabian Mate}
 
 The key to Arabian Mate is using the \underline{f6 knight} to protect a rook on g8 or h7. This is the oldest mating pattern.
@@ -288,7 +279,7 @@ The key to Arabian Mate is using the \underline{f6 knight} to protect a rook on 
   markstyle=protectray,markmove=f6-h7
 ]{7k/7R/5N2/8/8/8/8/8 b - - 0 1}{e5-h8}
 
-\Needspace{205pt}
+\noindent\begin{minipage}{\columnwidth}
 \subsection{Pin the g pawn}
 
 Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barrier.
@@ -299,12 +290,12 @@ Arabian's Mate often need \textbf{gh double rooks} to forcely open the pawn barr
   markstyle=attackray,markmove=g4-g8,
   markstyle=operathreat,markmove=h1-h6
 ]{2q2nk1/p4pp1/1p5p/2b5/4N1R1/P5p1/1P3PP1/6KR w - - 0 1}{1.Nf6}
+\end{minipage}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Morphy Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Needspace{105pt}
 \section{\texttwemoji{crossed swords} Morphy Mate}
 
 Much similar with Opera Mating, which is also discovered by Morphy. It feels like dula-weapon, longswoard + shortsword.
@@ -315,7 +306,6 @@ Much similar with Opera Mating, which is also discovered by Morphy. It feels lik
   backstyle=color,color=protectGreen!42,backfields={g7},
 ]{7k/7p/5B2/6R1/8/8/8/8 b - - 0 1}{e5-h8}
 
-\Needspace{205pt}
 \subsection{Queen Takes the f6 Knight}
 
 Morphy Mate often happes in the corner, occupying f6 to remove g pawn for rook is the key. Bishop often goes to f6.
@@ -332,7 +322,6 @@ Morphy Mate often happes in the corner, occupying f6 to remove g pawn for rook i
 % Boden Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Needspace{160pt}
 \section{\texttwemoji{crossed swords} Boden's Mate}
 
 Bishop pair cross mate, similar to Morphy Mate, this time we have the same dual swords at hands.
@@ -363,13 +352,12 @@ We ofen need to remove \underline{b or g pawn to} make path for 2nd bishop, this
 % Epaulette Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Needspace{150pt}
 \section{\texttwemoji{fleur-de-lis} Epaulette Mate}
 
 Be aware the Epaulette can only be rook or pawns (seems almost impossible in practice), Knights would fight back, bishops and queen would block the threat.
 
 \noindent\begin{minipage}[t]{0.48\columnwidth}
-  \centering\vspace{0pt}
+  \centering
   \chessboard[
     setfen={3rkr2/8/4Q3/8/8/8/8/K7 b - - 0 1},
     printarea={c6-g8},boardfontsize=16pt,showmover=true,
@@ -377,24 +365,21 @@ Be aware the Epaulette can only be rook or pawns (seems almost impossible in pra
     markstyle=operathreat,markmove=e6-d7,
     markstyle=operathreat,markmove=e6-f7
   ]\par
-  {\footnotesize\bfseries Queen}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.48\columnwidth}
-  \centering\vspace{0pt}
+  \centering
   \chessboard[
     setfen={3rkr2/2R5/4R3/8/8/8/8/K7 b - - 0 1},
     printarea={c6-g8},boardfontsize=16pt,showmover=true,
     markstyle=operathreat,markmove=e6-e8,
     markstyle=operathreat,markmove=c7-f7
   ]\par
-  {\footnotesize\bfseries Two rooks}
 \end{minipage}\par
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Dovetail Mate
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Needspace{190pt}
 \section{\texttwemoji{dove} Dovetail Mate}
 
 The key pattern is the L structure, unlike Epaulette Mate, this one need a protector.
@@ -407,7 +392,6 @@ The key pattern is the L structure, unlike Epaulette Mate, this one need a prote
   markstyle=protectray,markmove=f5-g6
 ]{5r2/4qk2/6Q1/5P2/8/8/8/K7 b - - 0 1}{d5-g8}
 
-\Needspace{205pt}
 \subsection{Discover Check \& Blocking}
 \noindent\makebox[\columnwidth][c]{\chessboard[
   setfen={6k1/1b3ppp/5q2/p7/P2Qn3/2NP2P1/2P3KP/1R2R1B1 b - - 0 1},
